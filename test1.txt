@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>JAIST TripMate UI Prototype</title>
+<style>
+  :root{
+    --bg:#f4f7f8;
+    --card:#ffffff;
+    --primary:#0f766e;
+    --primary-dark:#115e59;
+    --accent:#f59e0b;
+    --text:#172033;
+    --muted:#667085;
+    --line:#e5e7eb;
+    --blue:#2563eb;
+    --red:#ef4444;
+    --green:#16a34a;
+    --purple:#7c3aed;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    background:var(--bg);
+    color:var(--text);
+  }
+  header{
+    padding:28px 36px 16px;
+  }
+  h1{
+    margin:0 0 8px;
+    font-size:28px;
+  }
+  .subtitle{
+    color:var(--muted);
+    font-size:15px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(310px,1fr));
+    gap:28px;
+    padding:20px 36px 48px;
+  }
+  .phone{
+    width:310px;
+    height:650px;
+    background:#111827;
+    border-radius:36px;
+    padding:12px;
+    box-shadow:0 18px 35px rgba(15,23,42,.22);
+    margin:auto;
+  }
+  .screen{
+    width:100%;
+    height:100%;
+    background:#f8fafc;
+    border-radius:28px;
+    overflow:hidden;
+    position:relative;
+  }
+  .status{
+    height:26px;
+    padding:7px 18px 0;
+    font-size:11px;
+    display:flex;
+    justify-content:space-between;
+    color:#0f172a;
+  }
+  .appbar{
+    padding:12px 18px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .title{
+    font-weight:700;
+    font-size:20px;
+  }
+  .icon{
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    background:#e0f2f1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--primary);
+    font-weight:700;
+  }
+  .content{
+    padding:0 18px 82px;
+    height:calc(100% - 80px);
+    overflow:hidden;
+  }
+  .bottom{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    height:68px;
+    background:#fff;
+    border-top:1px solid var(--line);
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    font-size:10px;
+    color:var(--muted);
+  }
+  .navitem.active{color:var(--primary);font-weight:700}
+  .navicon{font-size:20px;display:block;text-align:center;margin-bottom:2px}
+  .search{
+    height:42px;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    display:flex;
+    align-items:center;
+    padding:0 12px;
+    color:var(--muted);
+    font-size:13px;
+    margin-bottom:14px;
+  }
+  .hero{
+    background:linear-gradient(135deg,var(--primary),#14b8a6);
+    color:#fff;
+    border-radius:22px;
+    padding:18px;
+    margin-bottom:16px;
+  }
+  .hero h2{font-size:21px;margin:0 0 8px}
+  .hero p{margin:0 0 14px;font-size:13px;opacity:.9}
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    height:38px;
+    padding:0 16px;
+    border-radius:999px;
+    background:var(--primary);
+    color:#fff;
+    font-weight:700;
+    font-size:13px;
+  }
+  .btn.white{background:#fff;color:var(--primary)}
+  .btn.ghost{background:#ecfdf5;color:var(--primary)}
+  .btn.orange{background:var(--accent)}
+  .section-title{
+    font-weight:700;
+    font-size:15px;
+    margin:18px 0 10px;
+    display:flex;
+    justify-content:space-between;
+  }
+  .see{font-size:12px;color:var(--primary)}
+  .card{
+    background:#fff;
+    border-radius:18px;
+    padding:14px;
+    border:1px solid var(--line);
+    margin-bottom:12px;
+  }
+  .trip-top{
+    display:flex;
+    justify-content:space-between;
+    gap:8px;
+  }
+  .tag{
+    display:inline-flex;
+    font-size:10px;
+    padding:5px 8px;
+    border-radius:999px;
+    background:#e0f2fe;
+    color:#0369a1;
+    margin-right:4px;
+    margin-top:6px;
+  }
+  .tag.green{background:#dcfce7;color:#166534}
+  .tag.orange{background:#fef3c7;color:#92400e}
+  .tag.purple{background:#ede9fe;color:#5b21b6}
+  .card h3{
+    margin:0 0 5px;
+    font-size:15px;
+  }
+  .meta{
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.5;
+  }
+  .map{
+    height:480px;
+    background:
+      linear-gradient(90deg,rgba(255,255,255,.6) 1px,transparent 1px),
+      linear-gradient(rgba(255,255,255,.6) 1px,transparent 1px),
+      #dbeafe;
+    background-size:42px 42px;
+    border-radius:24px;
+    position:relative;
+    overflow:hidden;
+    border:1px solid #bfdbfe;
+  }
+  .road{
+    position:absolute;
+    background:#fff;
+    opacity:.9;
+    border-radius:999px;
+  }
+  .road.r1{width:350px;height:18px;top:130px;left:-20px;transform:rotate(-16deg)}
+  .road.r2{width:260px;height:15px;top:300px;left:30px;transform:rotate(28deg)}
+  .road.r3{width:18px;height:420px;top:30px;left:170px;transform:rotate(8deg)}
+  .pin{
+    position:absolute;
+    width:34px;
+    height:34px;
+    border-radius:50% 50% 50% 0;
+    transform:rotate(-45deg);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-size:14px;
+    box-shadow:0 8px 16px rgba(0,0,0,.22);
+  }
+  .pin span{transform:rotate(45deg)}
+  .p1{background:var(--red);top:85px;left:58px}
+  .p2{background:var(--blue);top:185px;left:195px}
+  .p3{background:var(--green);top:310px;left:112px}
+  .p4{background:var(--purple);top:390px;left:214px}
+  .map-card{
+    position:absolute;
+    left:16px;
+    right:16px;
+    bottom:16px;
+    background:#fff;
+    border-radius:20px;
+    padding:14px;
+    box-shadow:0 12px 28px rgba(15,23,42,.18);
+  }
+  .filter-row{
+    display:flex;
+    gap:8px;
+    overflow:hidden;
+    margin-bottom:12px;
+  }
+  .chip{
+    white-space:nowrap;
+    padding:8px 11px;
+    border-radius:999px;
+    background:#fff;
+    border:1px solid var(--line);
+    font-size:12px;
+  }
+  .chip.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+  .form-group{margin-bottom:13px}
+  label{display:block;font-weight:700;font-size:12px;margin-bottom:6px}
+  .input{
+    height:42px;
+    border-radius:13px;
+    border:1px solid var(--line);
+    background:#fff;
+    display:flex;
+    align-items:center;
+    padding:0 12px;
+    color:#475569;
+    font-size:13px;
+  }
+  .textarea{
+    height:78px;
+    align-items:flex-start;
+    padding-top:12px;
+  }
+  .seg{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-bottom:14px;
+  }
+  .seg div{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:12px 8px;
+    text-align:center;
+    font-size:12px;
+    font-weight:700;
+  }
+  .seg .selected{background:#ecfdf5;border-color:var(--primary);color:var(--primary)}
+  .profile-head{
+    background:#fff;
+    border-radius:24px;
+    padding:20px;
+    text-align:center;
+    border:1px solid var(--line);
+  }
+  .avatar{
+    width:74px;
+    height:74px;
+    border-radius:50%;
+    background:linear-gradient(135deg,#ccfbf1,#99f6e4);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:0 auto 10px;
+    font-size:26px;
+    font-weight:800;
+    color:var(--primary);
+  }
+  .rating{color:#f59e0b;font-size:13px;margin-top:4px}
+  .message{
+    max-width:78%;
+    padding:10px 12px;
+    border-radius:16px;
+    margin:9px 0;
+    font-size:13px;
+    line-height:1.45;
+  }
+  .left{background:#fff;border-top-left-radius:4px}
+  .right{background:#ccfbf1;margin-left:auto;border-top-right-radius:4px}
+  .inputbar{
+    position:absolute;
+    left:12px;
+    right:12px;
+    bottom:78px;
+    height:44px;
+    border-radius:999px;
+    background:#fff;
+    border:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    padding:0 14px;
+    color:var(--muted);
+    font-size:13px;
+  }
+  .screen-name{
+    text-align:center;
+    font-weight:700;
+    margin-top:10px;
+    color:#334155;
+  }
+  .spot-img{
+    height:120px;
+    border-radius:18px;
+    background:linear-gradient(135deg,#fde68a,#f97316);
+    margin-bottom:12px;
+    position:relative;
+    overflow:hidden;
+  }
+  .spot-img:after{
+    content:"";
+    position:absolute;
+    width:160px;
+    height:80px;
+    background:rgba(255,255,255,.35);
+    border-radius:50%;
+    right:-40px;
+    top:28px;
+  }
+  .review{
+    display:flex;
+    gap:10px;
+    margin-top:12px;
+  }
+  .mini-avatar{
+    width:32px;height:32px;border-radius:50%;background:#e2e8f0;
+    display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;
+  }
+  .alert{
+    background:#fff7ed;
+    border:1px solid #fed7aa;
+    color:#9a3412;
+    border-radius:14px;
+    padding:11px;
+    font-size:12px;
+    line-height:1.45;
+    margin-bottom:12px;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>JAIST TripMate UI Prototype</h1>
+  <div class="subtitle">JAISTコミュニティ向け：観光同行・相乗り・おすすめスポットを統合したスマホアプリUI</div>
+</header>
+
+<div class="grid">
+
+  <!-- 1 Splash -->
+  <div>
+    <div class="phone"><div class="screen">
+      <div class="status"><span>9:41</span><span>●●●</span></div>
+      <div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;background:linear-gradient(160deg,#0f766e,#14b8a6);color:white;text-align:center;">
+        <div style="font-size:54px;margin-bottom:14px;">🧭</div>
+        <h2 style="font-size:30px;margin:0 0 8px;">JAIST TripMate</h2>
+        <p style="font-size:14px;line-height:1.7;opacity:.92;">行きたい場所、同行者、車、レビューを<br>JAIST内で安全にマッチング</p>
+        <div style="position:absolute;bottom:44px;font-size:12px;opacity:.8;">JAIST Community Only</div>
+      </div>
+    </div></div>
+    <div class="screen-name">1. スプラッシュ</div>
+  </div>
+
+  <!-- 2 Login -->
+  <div>
+    <div class="phone"><div class="screen">
+      <div class="status"><span>9:41</span><span>●●●</span></div>
+      <div class="content" style="height:100%;padding-top:42px;">
+        <div class="hero" style="margin-top:42px;">
+          <h2>JAISTメールでログイン</h2>
+          <p>学内限定コミュニティとして安全に利用できます。</p>
+        </div>
+        <div class="form-group"><label>メールアドレス</label><div class="input">example@jaist.ac.jp</div></div>
+        <div class="form-group"><label>パスワード</label><div class="input">••••••••</div></div>
+        <div class="btn" style="width:100%;margin-top:8px;">ログイン</div>
+        <div class="btn ghost" style="width:100%;margin-top:10px;">新規登録</div>
+        <p class="meta" style="margin-top:22px;">※ JAIST関係者のみ利用できます。認証後、プロフィール設定へ進みます。</p>
+      </div>
+    </div></div>
+    <div class="screen-name">2. ログイン</div>
+  </div>
+
+  <!-- 3 Onboarding -->
+  <div>
+    <div class="phone"><div class="screen">
+      <div class="status"><span>9:41</span><span>●●●</span></div>
+      <div class="appbar"><div class="title">プロフィール設定</div><div class="icon">1/3</div></div>
+      <div class="content">
+        <div class="form-group"><label>表示名</label><div class="input">Miyako</div></div>
+        <div class="form-group"><label>所属</label><div class="input">学生</div></div>
+        <div class="form-group"><label>使用言語</label><div class="input">日本語・English</div></div>
+        <div class="form-group"><label>興味のある外出</label>
+          <div><span class="tag green">カフェ</span><span class="tag">観光</span><span class="tag purple">写真</span><span class="tag orange">温泉</span></div>
+        </div>
+        <div class="form-group"><label>車の利用</label><div class="input">車なし・相乗り希望</div></div>
+        <div class="alert">安全のため、初回利用前に学内メール認証と基本プロフィール登録が必要です。</div>
+        <div class="btn" style="width:100%;position:absolute;left:18px;right:18px;bottom:28px;width:calc(100% - 36px);">はじめる</div>
+      </div>
+    </div></div>
+    <div class="screen-name">3. 初期プロフィール</div>
+  </div>
+
+  <!-- 4 Home -->
+  <div>
+    <div class="phone"><div class="screen">
+      <div class="status"><span>9:41</span><span>●●●</span></div>
+      <div class="appbar"><div><div class="meta">こんにちは</div><div class="title">Miyakoさん</div></div><div class="icon">M</div></div>
+      <div class="content">
+        <div class="search">🔍 行きたい場所・募集を検索</div>
+        <div class="hero">
+          <h2>週末、どこへ行く？</h2>
+          <p>同行者・車・おすすめスポットをまとめて探せます。</p>
+          <div class="btn white">募集を作る</div>
+        </div>
+        <div class="section-title">おすすめ募集 <span class="see">すべて</span></div>
+        <div class="card">
+          <div class="trip-top"><h3>金沢カフェ巡り</h3><span class="tag green">車あり</span></div>
+          <div class="meta">土曜 10:00｜残り2名｜日本語・英語OK</div>
+        </div>
+        <div class="card">
+          <div class="trip-top"><h3>山中温泉へ日帰り</h3><span class="tag orange">相乗り募集</span></div>
+          <div class="meta">日曜 13:00｜ガソリン代分担｜残り1名</div>
+        </div>
+        <div class="section-title">JAIST生の人気スポット</div>
+        <div class="card"><h3>近江町市場</h3><div class="meta">★4.6｜車で45分｜海鮮・観光</div></div>
+      </div>
+      <div class="bottom">
+        <div class="navitem active"><span class="navicon">🏠</span>ホーム</div><div class="navitem"><span class="navicon">🗺️</span>マップ</div><div class="navitem"><span class="navicon">＋</span>作成</div><div class="navitem"><span class="navicon">💬</span>チャット</div><div class="navitem"><span class="navicon">👤</span>自分</div>
+      </div>
+    </div></div>
+    <div class="screen-name">4. ホーム</div>
+  </div>
+
+  <!-- 5 Map -->
+  <div>
+    <div class="phone"><div class="screen">
+      <div class="status"><span>9:41</span><span>●●●</span></div>
+      <div class="appbar"><div class="title">マップ</div><div class="icon">⚙</div></div>
+      <div class="content">
+        <div class="filter-row">
+          <div class="chip active">すべて</div><div class="chip">飲食店</div><div class="chip">観光</div><div class="chip">車あり</div>
+        </div>
+        <div class="map">
+          <div class="road r1"></div><div class="road r2"></div><div class="road r3"></div>
+          <div class="pin p1"><span>🍜</span></div>
+          <div class="pin p2"><span>🏯</span></div>
+          <div class="pin p3"><span>🚗</span></div>
+          <div class="pin p4"><span>👥</span></div>
+          <div class="map-card">
+            <h3>金沢21世紀美術館</h3>
+            <div class="meta">★4.5｜JAISTから車で42分｜現在1件の募集あり</div>
+            <div style="margin-top:10px;"><span class="tag purple">同行者募集</span><span class="tag green">車あり</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="bottom">
+        <div class="navitem"><span class="navicon">🏠</span>ホーム</div><div class="navitem active"><span class="navicon">🗺️</span>マップ</div><div class="navitem"><span class="navicon">＋</span>作成</div><div class="navitem"><span class="navicon">💬</span>チャット</div><div class="navitem"><span class="navicon">👤</span>自分</div>
+      </div>
+    </div></div>
+    <div class="screen-name">5. マップ</div>
+  </div>
+
+  <!-- 6 Trip List -->
+  <div>
+    <div class="phone"><div class="screen">
+      <div class="status"><span>9:41</span><span>●●●</span></div>
+      <div class="appbar"><div class="title">募集一覧</div><div class="icon">🔎</div></div>
+      <div class="content">
+        <div class="filter-row">
+          <div class="chip active">今週</div><div class="chip">車あり</div><div class="chip">観光</div><div class="chip">食事</div>
+        </div>
+        <div class="card"><h3>白川郷ライトアップ</h3><div class="meta">6/15 08:30｜3/4人｜車あり｜英語OK</div><span class="tag green">ドライバー確定</span><span class="tag">観光</span></div>
+        <div class="card"><h3>小松イオン買い物</h3><div class="meta">6/13 18:00｜1/3人｜車募集</div><span class="tag orange">車を出せる人募集</span></div>
+        <div class="card"><h3>金沢ラーメン開拓</h3><div class="meta">6/14 12:00｜2/4人｜公共交通</div><span class="tag red">ランチ</span></div>
+        <div class="card"><h3>片山津温泉</h3><div class="meta">6/16 13:00｜2/3人｜費用分担</div><span class="tag green">車あり</span><span class="tag orange">温泉</span></div>
+      </div>
+      <div class="bottom">
+        <div class="navitem"><span class="navicon">🏠</span>ホーム</div><div class="navitem active"><span class="navicon">🗺️</span>探す</div><div class="navitem"><span class="navicon">＋</span>作成</div><div class="navitem"><span class="navicon">💬</span>チャット</div><div class="navitem"><span class="navicon">👤</span>自分</div>
+      </div>
+    </div></div>
+    <div class="screen-name">6. 募集一覧</div>
+  </div>
+
+  <!-- 7 Trip Detail -->
+  <div>
+    <div class="phone"><div class="screen">
+      <div class="status"><span>9:41</span><span>●●●</span></div>
+      <div class="appbar"><div class="icon">←</div><div class="title">募集詳細</div><div class="icon">♡</div></div>
+      <div class="content">
+        <div class="card">
+          <h3 style="font-size:20px;">金沢カフェ巡り</h3>
+          <div class="meta">主催：Aiko｜★4.8｜学生</div>
+          <div style="margin-top:8px;"><span class="tag green">車あり</span><span class="tag purple">写真好き歓迎</span></div>
+        </div>
+        <div class="card">
+          <h3>予定</h3>
+          <div class="meta">日時：6/14(土) 10:00〜17:00<br>集合：JAIST正門<br>人数：2/4名<br>費用：ガソリン・駐車場代を分担</div>
+        </div>
+        <div class="card">
+          <h3>ルート</h3>
+          <div class="meta">JAIST → 金沢駅 → 近江町市場 → カフェ → 21世紀美術館</div>
+        </div>
+        <div class="alert">参加前に集合場所・費用・帰宅予定をチャットで確認してください。</div>
+        <div class="btn" style="width:100%;">参加申請する</div>
+      </div>
+    </div></div>
+    <div class="screen-name">7. 募集詳細</div>
+  </div>
+
+  <!-- 8 Create -->
+  <div>
+    <div class="phone"><div class="screen">
+      <div class="status"><span>9:41</span><span>●●●</span></div>
+      <div class="appbar"><div class="title">募集を作成</div><div class="icon">×</div></div>
+      <div class="content">
+        <div class="seg">
+          <div class="selected">同行者募集</div><div>車募集</div>
+          <div>車あり募集</div><div>スポット投稿</div>
+        </div>
+        <div class="form-group"><label>タイトル</label><div class="input">金沢カフェ巡り</div></div>
+        <div class="form-group"><label>目的地</label><div class="input">金沢市周辺</div></div>
+        <div class="form-group"><label>日時</label><div class="input">6/14(土) 10:00</div></div>
+        <div class="form-group"><label>募集人数</label><div class="input">最大4人</div></div>
+        <div class="form-group"><label>移動手段</label><div class="input">車あり・費用分担</div></div>
+        <div class="form-group"><label>説明</label><div class="input textarea">写真を撮りながら、ゆっくりカフェを回りたいです。</div></div>
+        <div class="btn" style="width:100%;">投稿する</div>
+      </div>
+      <div class="bottom">
+        <div class="navitem"><span class="navicon">🏠</span>ホーム</div><div class="navitem"><span class="navicon">🗺️</span>マップ</div><div class="navitem active"><span class="navicon">＋</span>作成</div><div class="navitem"><span class="navicon">💬</span>チャット</div><div class="navitem"><span class="navicon">👤</span>自分</div>
+      </div>
+    </div></div>
+    <div class="screen-name">8. 募集作成</div>
+  </div>
+
+  <!-- 9 Driver -->
+  <div>
+    <div class="phone"><div class="screen">
+      <div class="status"><span>9:41</span><span>●●●</span></div>
+      <div class="appbar"><div class="title">相乗り</div><div class="icon">🚗</div></div>
+      <div class="content">
+        <div class="hero">
+          <h2>車で行ける募集</h2>
+          <p>実費分担で安全に移動。ドライバー評価を確認できます。</p>
+        </div>
+        <div class="card"><h3>白川郷 日帰り</h3><div class="meta">Driver: Ken｜★4.9｜残り1席<br>費用目安：¥2,000〜¥3,000</div><span class="tag green">安全運転</span><span class="tag">英語OK</span></div>
+        <div class="card"><h3>イオンモール白山</h3><div class="meta">Driver募集中｜3人参加希望<br>出発：JAIST 18:00</div><span class="tag orange">車を出せる人募集</span></div>
+        <div class="card"><h3>小松空港</h3><div class="meta">Driver: Lin｜★4.7｜残り2席<br>片道のみ</div><span class="tag green">空港送迎</span></div>
+      </div>
+      <div class="bottom">
+        <div class="navitem"><span class="navicon">🏠</span>ホーム</div><div class="navitem active"><span class="navicon">🚗</span>相乗り</div><div class="navitem"><span class="navicon">＋</span>作成</div><div class="navitem"><span class="navicon">💬</span>チャット</div><div class="navitem"><span class="navicon">👤</span>自分</div>
+      </div>
+    </div></div>
+    <div class="screen-name">9. 相乗り一覧</div>
+  </div>
+
+  <!-- 10 Spot Detail -->
+  <div>
+    <div class="phone"><div class="screen">
+      <div class="status"><span>9:41</span><span>●●●</span></div>
+      <div class="appbar"><div class="icon">←</div><div class="title">スポット詳細</div><div class="icon">♡</div></div>
+      <div class="content">
+        <div class="spot-img"></div>
+        <h3 style="font-size:21px;margin:0 0 4px;">近江町市場</h3>
+        <div class="rating">★★★★★ 4.6</div>
+        <div class="meta">金沢市｜JAISTから車で45分｜海鮮・観光</div>
+        <div style="margin:12px 0;"><span class="tag">観光</span><span class="tag orange">ランチ</span><span class="tag green">車推奨</span></div>
+        <div class="card"><h3>JAIST生コメント</h3><div class="review"><div class="mini-avatar">L</div><div><b>Li</b><div class="meta">留学生を連れて行きやすい。週末は混むので早めがおすすめ。</div></div></div></div>
+        <div class="btn" style="width:100%;margin-bottom:10px;">この場所への募集を作る</div>
+        <div class="btn ghost" style="width:100%;">レビューを書く</div>
+      </div>
+    </div></div>
+    <div class="screen-name">10. スポット詳細</div>
+  </div>
+
+  <!-- 11 Chat List -->
+  <div>
+    <div class="phone"><div class="screen">
+      <div class="status"><span>9:41</span><span>●●●</span></div>
+      <div class="appbar"><div class="title">チャット</div><div class="icon">＋</div></div>
+      <div class="content">
+        <div class="card"><h3>金沢カフェ巡り</h3><div class="meta">Aiko: 集合は正門で大丈夫ですか？</div></div>
+        <div class="card"><h3>白川郷 日帰り</h3><div class="meta">Ken: ガソリン代は当日精算でお願いします。</div></div>
+        <div class="card"><h3>小松イオン買い物</h3><div class="meta">Mina: 車を出せる人が見つかりました。</div></div>
+      </div>
+      <div class="bottom">
+        <div class="navitem"><span class="navicon">🏠</span>ホーム</div><div class="navitem"><span class="navicon">🗺️</span>マップ</div><div class="navitem"><span class="navicon">＋</span>作成</div><div class="navitem active"><span class="navicon">💬</span>チャット</div><div class="navitem"><span class="navicon">👤</span>自分</div>
+      </div>
+    </div></div>
+    <div class="screen-name">11. チャット一覧</div>
+  </div>
+
+  <!-- 12 Chat Room -->
+  <div>
+    <div class="phone"><div class="screen">
+      <div class="status"><span>9:41</span><span>●●●</span></div>
+      <div class="appbar"><div class="icon">←</div><div><div class="title" style="font-size:17px;">金沢カフェ巡り</div><div class="meta">4人参加予定</div></div><div class="icon">⋯</div></div>
+      <div class="content">
+        <div class="alert">集合：6/14 10:00 JAIST正門｜緊急連絡ボタンあり</div>
+        <div class="message left">集合場所は正門で大丈夫ですか？</div>
+        <div class="message right">大丈夫です。10時に行きます。</div>
+        <div class="message left">車は私が出します。駐車場代は割り勘でお願いします。</div>
+        <div class="message right">了解です。ありがとうございます。</div>
+      </div>
+      <div class="inputbar">メッセージを入力</div>
+    </div></div>
+    <div class="screen-name">12. グループチャット</div>
+  </div>
+
+  <!-- 13 Review -->
+  <div>
+    <div class="phone"><div class="screen">
+      <div class="status"><span>9:41</span><span>●●●</span></div>
+      <div class="appbar"><div class="title">レビュー</div><div class="icon">×</div></div>
+      <div class="content">
+        <div class="card"><h3>金沢カフェ巡り</h3><div class="meta">外出後の評価を入力してください。</div></div>
+        <div class="form-group"><label>スポット評価</label><div class="input">★★★★★</div></div>
+        <div class="form-group"><label>同行者評価</label><div class="input">時間厳守・マナー良い</div></div>
+        <div class="form-group"><label>ドライバー評価</label><div class="input">安全運転・連絡が丁寧</div></div>
+        <div class="form-group"><label>コメント</label><div class="input textarea">初参加でも安心でした。カフェも良かったです。</div></div>
+        <div class="btn" style="width:100%;">送信する</div>
+      </div>
+    </div></div>
+    <div class="screen-name">13. レビュー投稿</div>
+  </div>
+
+  <!-- 14 Profile -->
+  <div>
+    <div class="phone"><div class="screen">
+      <div class="status"><span>9:41</span><span>●●●</span></div>
+      <div class="appbar"><div class="title">プロフィール</div><div class="icon">⚙</div></div>
+      <div class="content">
+        <div class="profile-head">
+          <div class="avatar">M</div>
+          <h3 style="margin:0;">Miyako</h3>
+          <div class="meta">学生｜JAIST認証済み</div>
+          <div class="rating">★★★★★ 4.8</div>
+        </div>
+        <div class="section-title">基本情報</div>
+        <div class="card"><div class="meta">言語：日本語・English<br>興味：カフェ、観光、写真、温泉<br>車：なし・相乗り希望</div></div>
+        <div class="section-title">利用履歴</div>
+        <div class="card"><h3>参加した外出</h3><div class="meta">8件｜レビュー 6件｜通報 0件</div></div>
+        <div class="card"><h3>安全設定</h3><div class="meta">ブロック・通報・緊急連絡先</div></div>
+      </div>
+      <div class="bottom">
+        <div class="navitem"><span class="navicon">🏠</span>ホーム</div><div class="navitem"><span class="navicon">🗺️</span>マップ</div><div class="navitem"><span class="navicon">＋</span>作成</div><div class="navitem"><span class="navicon">💬</span>チャット</div><div class="navitem active"><span class="navicon">👤</span>自分</div>
+      </div>
+    </div></div>
+    <div class="screen-name">14. プロフィール</div>
+  </div>
+
+  <!-- 15 Safety -->
+  <div>
+    <div class="phone"><div class="screen">
+      <div class="status"><span>9:41</span><span>●●●</span></div>
+      <div class="appbar"><div class="title">安全・通報</div><div class="icon">!</div></div>
+      <div class="content">
+        <div class="alert">トラブル時は、通報・ブロック・緊急連絡を利用できます。</div>
+        <div class="card"><h3>ユーザーを通報</h3><div class="meta">迷惑行為、危険運転、不適切発言など</div></div>
+        <div class="card"><h3>ブロックリスト</h3><div class="meta">ブロックしたユーザーを管理</div></div>
+        <div class="card"><h3>緊急連絡</h3><div class="meta">集合中・移動中の緊急時に利用</div></div>
+        <div class="card"><h3>利用ルール</h3><div class="meta">費用分担、事故責任、学内限定利用のガイドライン</div></div>
+        <div class="btn orange" style="width:100%;margin-top:10px;">緊急連絡画面を開く</div>
+      </div>
+    </div></div>
+    <div class="screen-name">15. 安全・通報</div>
+  </div>
+
+</div>
+</body>
+</html>
