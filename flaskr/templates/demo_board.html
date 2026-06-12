@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JAIST GO | 募集掲示板デモ</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='demo/jaist_go_demo.css') }}">
+</head>
+<body>
+    <header class="app-header">
+        <a class="brand" href="{{ url_for('demo_board') }}" aria-label="JAIST GO 募集掲示板">
+            <span class="brand-mark">JG</span>
+            <span>
+                <strong>JAIST GO</strong>
+                <small>募集掲示板デモ</small>
+            </span>
+        </a>
+        <nav class="top-nav" aria-label="デモメニュー">
+            <a href="{{ url_for('demo_board') }}" aria-current="page">掲示板</a>
+            <button type="button" class="ghost-button" data-open-compose>募集を作る</button>
+        </nav>
+    </header>
+
+    <main class="board-shell">
+        <section class="board-hero" aria-labelledby="board-title">
+            <div class="hero-copy">
+                <p class="eyebrow">JAIST生のための移動と遊びの募集</p>
+                <h1 id="board-title">今日行ける人、車を出せる人をすぐ見つける。</h1>
+                <p>買い物、温泉、飲み会、駅までの移動などを、連絡先つきの募集として確認できます。</p>
+            </div>
+            <div class="hero-visual" aria-label="JAIST周辺の移動イメージ">
+                <div class="route-map">
+                    <span class="pin pin-campus">JAIST</span>
+                    <span class="pin pin-station">鶴来駅</span>
+                    <span class="pin pin-mall">買い物</span>
+                    <span class="route-line route-line-a"></span>
+                    <span class="route-line route-line-b"></span>
+                    <span class="car-dot"></span>
+                </div>
+            </div>
+        </section>
+
+        <section class="board-tools" aria-label="募集の絞り込み">
+            <div class="search-field">
+                <span aria-hidden="true">⌕</span>
+                <input id="searchInput" type="search" placeholder="行き先、目的、連絡手段で検索">
+            </div>
+            <div class="segmented-control" role="tablist" aria-label="募集カテゴリ">
+                <button type="button" class="is-active" data-filter="all">すべて</button>
+                <button type="button" data-filter="ride">車募集</button>
+                <button type="button" data-filter="event">遊び</button>
+                <button type="button" data-filter="soon">近い予定</button>
+            </div>
+        </section>
+
+        <section class="board-grid">
+            <aside class="summary-panel" aria-label="掲示板の状況">
+                <div>
+                    <span class="summary-number" id="activeCount">0</span>
+                    <span class="summary-label">件の募集中</span>
+                </div>
+                <div class="summary-stack">
+                    <p><strong>車ありが見つかりやすい募集</strong></p>
+                    <p>集合場所、人数、帰宅予定、謝礼の有無が書かれている投稿を上に表示しています。</p>
+                </div>
+                <button type="button" class="primary-button wide" data-open-compose>募集を作る</button>
+            </aside>
+
+            <div>
+                <div class="list-header">
+                    <h2>募集一覧</h2>
+                    <span id="resultLabel">読み込み中</span>
+                </div>
+                <div id="postList" class="post-list" aria-live="polite"></div>
+            </div>
+        </section>
+    </main>
+
+    <dialog class="compose-dialog" id="composeDialog">
+        <form method="dialog" class="compose-form">
+            <div class="dialog-header">
+                <h2>募集作成デモ</h2>
+                <button type="submit" class="icon-button" aria-label="閉じる">×</button>
+            </div>
+            <label>タイトル<input type="text" value="今夜、辰口温泉に行ける人募集"></label>
+            <label>行き先<input type="text" value="辰口温泉"></label>
+            <label>連絡先<input type="text" value="@jaist_go_demo"></label>
+            <label>メモ<textarea rows="4">車を出せる方がいたら連絡ください。ガソリン代は割り勘します。</textarea></label>
+            <button type="submit" class="primary-button">デモを閉じる</button>
+        </form>
+    </dialog>
+
+    <script src="{{ url_for('static', filename='demo/jaist_go_demo.js') }}"></script>
+</body>
+</html>
