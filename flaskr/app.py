@@ -60,6 +60,15 @@ def show_map(data_id):
         google_map_api_key=app.config["google_map_api_key"]
     )
 
+@app.route("/demo/board")
+def demo_board():
+    return render_template("demo_board.html")
+
+
+@app.route("/demo/posts/<int:post_id>")
+def demo_post(post_id):
+    return render_template("demo_post.html", post_id=post_id)
+
 @app.cli.command("create-db")
 def create_db():
     with sqlite3.connect(DB_NAME) as conn:
