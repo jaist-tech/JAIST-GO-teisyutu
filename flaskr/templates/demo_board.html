@@ -17,6 +17,7 @@
         </a>
         <nav class="top-nav" aria-label="デモメニュー">
             <a href="{{ url_for('demo_board') }}" aria-current="page">掲示板</a>
+            <a href="#reviews">口コミ</a>
             <button type="button" class="ghost-button" data-open-compose>募集を作る</button>
         </nav>
     </header>
@@ -72,6 +73,84 @@
                     <span id="resultLabel">読み込み中</span>
                 </div>
                 <div id="postList" class="post-list" aria-live="polite"></div>
+            </div>
+        </section>
+
+        <section class="review-section" id="reviews" aria-labelledby="review-title">
+            <div class="review-header">
+                <div>
+                    <p class="eyebrow">大学周辺店舗の口コミ</p>
+                    <h2 id="review-title">お店の感想を投稿する</h2>
+                    <p>店名、星評価、自由記述の口コミを残せます。</p>
+                </div>
+                <aside class="ranking-panel" aria-label="直近30日の口コミランキング">
+                    <h3>直近30日の口コミ数ランキング</h3>
+                    {% if review_ranking %}
+                        <ol class="ranking-list">
+                            {% for shop_name, count in review_ranking %}
+                                <li>
+                                    <span>{{ shop_name }}</span>
+                                    <strong>{{ count }}件</strong>
+                                </li>
+                            {% endfor %}
+                        </ol>
+                    {% else %}
+                        <p class="muted-text">まだランキング対象の口コミがありません。</p>
+                    {% endif %}
+                </aside>
+            </div>
+
+            <form class="review-form" method="post" action="{{ url_for('demo_board') }}#reviews">
+                {% if review_posted %}
+                    <p class="success-message">口コミを投稿しました。</p>
+                {% endif %}
+                {% if review_error %}
+                    <p class="error-message">{{ review_error }}</p>
+                {% endif %}
+                <label>
+                    店名
+                    <input name="shop_name" type="text" placeholder="例: 辰口温泉 総湯" required>
+                </label>
+                <fieldset class="star-field">
+                    <legend>星評価</legend>
+                    <div class="star-options">
+                        {% for rating in range(5, 0, -1) %}
+                            <input id="rating-{{ rating }}" name="rating" type="radio" value="{{ rating }}" required>
+                            <label for="rating-{{ rating }}" aria-label="{{ rating }}点">★</label>
+                        {% endfor %}
+                    </div>
+                </fieldset>
+                <label>
+                    口コミ
+                    <textarea name="comment" rows="5" placeholder="味、価格、混み具合、アクセス、車で行きやすいかなど" required></textarea>
+                </label>
+                <button type="submit" class="primary-button">口コミを投稿</button>
+            </form>
+
+            <div class="review-list" aria-live="polite">
+                <div class="list-header">
+                    <h2>新着口コミ</h2>
+                    <span>{{ reviews|length }}件</span>
+                </div>
+                {% if reviews %}
+                    {% for review in reviews %}
+                        <article class="review-card">
+                            <div class="review-card-header">
+                                <div>
+                                    <h3>{{ review.shop_name }}</h3>
+                                    <p>{{ review.created_label }}</p>
+                                </div>
+                                <div class="review-stars" aria-label="{{ review.rating }}点">
+                                    {% for _ in range(review.rating) %}★{% endfor %}
+                                    {% for _ in range(5 - review.rating) %}☆{% endfor %}
+                                </div>
+                            </div>
+                            <p>{{ review.comment }}</p>
+                        </article>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">まだ口コミがありません。最初の口コミを投稿してください。</div>
+                {% endif %}
             </div>
         </section>
     </main>
