@@ -672,12 +672,211 @@ a {
     resize: vertical;
 }
 
+.review-section {
+    display: grid;
+    gap: 20px;
+    padding: 4px 0 56px;
+}
+
+.review-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 22px;
+    align-items: stretch;
+}
+
+.review-header h2,
+.ranking-panel h3 {
+    margin: 0;
+}
+
+.review-header p {
+    color: var(--muted);
+    line-height: 1.7;
+}
+
+.review-form,
+.ranking-panel,
+.review-card {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--panel);
+    box-shadow: 0 10px 26px rgba(24, 32, 42, 0.06);
+}
+
+.review-form {
+    display: grid;
+    gap: 16px;
+    padding: 20px;
+}
+
+.review-form label,
+.star-field legend {
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.review-form label {
+    display: grid;
+    gap: 8px;
+}
+
+.review-form input[type="text"],
+.review-form textarea {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 12px;
+    color: var(--ink);
+    resize: vertical;
+}
+
+.star-field {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.star-options {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    gap: 4px;
+    margin-top: 8px;
+}
+
+.star-options input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.star-options label {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    color: #b7c1cc;
+    cursor: pointer;
+    font-size: 24px;
+    line-height: 1;
+}
+
+.star-options input:checked ~ label,
+.star-options label:hover,
+.star-options label:hover ~ label {
+    border-color: rgba(199, 120, 24, 0.38);
+    background: #fff7ea;
+    color: var(--amber);
+}
+
+.success-message,
+.error-message {
+    margin: 0;
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-weight: 800;
+}
+
+.success-message {
+    border: 1px solid rgba(23, 122, 91, 0.3);
+    background: #eaf5f0;
+    color: var(--green-dark);
+}
+
+.error-message {
+    border: 1px solid rgba(182, 75, 100, 0.32);
+    background: #fff0f4;
+    color: var(--rose);
+}
+
+.ranking-panel {
+    padding: 20px;
+}
+
+.ranking-list {
+    display: grid;
+    gap: 10px;
+    margin: 16px 0 0;
+    padding: 0;
+    list-style-position: inside;
+}
+
+.ranking-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    background: #fbfcfd;
+}
+
+.ranking-list span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.ranking-list strong {
+    white-space: nowrap;
+    color: var(--green-dark);
+}
+
+.muted-text {
+    color: var(--muted);
+}
+
+.review-list {
+    display: grid;
+    gap: 12px;
+}
+
+.review-card {
+    padding: 18px;
+}
+
+.review-card-header {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.review-card h3 {
+    margin: 0 0 6px;
+    font-size: 20px;
+}
+
+.review-card-header p,
+.review-card > p {
+    margin: 0;
+    color: var(--muted);
+}
+
+.review-card > p {
+    margin-top: 14px;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+}
+
+.review-stars {
+    white-space: nowrap;
+    color: var(--amber);
+    font-size: 18px;
+    letter-spacing: 0;
+}
+
 @media (max-width: 880px) {
     .app-header,
     .board-tools,
     .board-grid,
     .detail-shell,
-    .post-card {
+    .post-card,
+    .review-header {
         grid-template-columns: 1fr;
     }
 
