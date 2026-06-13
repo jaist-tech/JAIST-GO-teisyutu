@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JAIST GO | ログイン</title>
+</head>
+<body>
+    <main class="auth-shell">
+        <h1>ログイン</h1>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <p class="success-message">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% if error %}
+            <p class="error-message">{{ error }}</p>
+        {% endif %}
+
+        <form method="post" action="{{ url_for('login', next=request.args.get('next', '')) }}">
+            <label>
+                ユーザー名
+                <input name="username" type="text" autocomplete="username" required>
+            </label>
+            <label>
+                パスワード
+                <input name="password" type="password" autocomplete="current-password" required>
+            </label>
+            <button type="submit">ログイン</button>
+        </form>
+
+        <p>アカウントがない場合は <a href="{{ url_for('register') }}">新規登録</a></p>
+    </main>
+</body>
+</html>
