@@ -17,7 +17,9 @@
         </a>
         <nav class="top-nav" aria-label="デモメニュー">
             <a href="{{ url_for('demo_board') }}" aria-current="page">掲示板</a>
+            <a href="#reviews">口コミ</a>
             <button type="button" class="ghost-button" data-open-compose>募集を作る</button>
+            {% include "_auth_status.html" %}
         </nav>
     </header>
 
@@ -49,7 +51,6 @@
                 <button type="button" class="is-active" data-filter="all">すべて</button>
                 <button type="button" data-filter="ride">車募集</button>
                 <button type="button" data-filter="event">遊び</button>
-                <button type="button" data-filter="soon">近い予定</button>
             </div>
         </section>
 
@@ -74,19 +75,109 @@
                 <div id="postList" class="post-list" aria-live="polite"></div>
             </div>
         </section>
+
+        <section class="review-section" id="reviews" aria-labelledby="review-title">
+            <div class="review-header">
+                <div>
+                    <p class="eyebrow">大学周辺店舗の口コミ</p>
+                    <h2 id="review-title">お店の感想を投稿する</h2>
+                    <p>店名、星評価、自由記述の口コミを残せます。</p>
+                </div>
+                <aside class="ranking-panel" aria-label="直近30日の口コミランキング">
+                    <h3>直近30日の口コミ数ランキング</h3>
+                    {% if review_ranking %}
+                        <ol class="ranking-list">
+                            {% for shop_name, count in review_ranking %}
+                                <li>
+                                    <span>{{ shop_name }}</span>
+                                    <strong>{{ count }}件</strong>
+                                </li>
+                            {% endfor %}
+                        </ol>
+                    {% else %}
+                        <p class="muted-text">まだランキング対象の口コミがありません。</p>
+                    {% endif %}
+                </aside>
+            </div>
+
+            <form class="review-form" method="post" action="{{ url_for('demo_board') }}#reviews">
+                {% if review_posted %}
+                    <p class="success-message">口コミを投稿しました。</p>
+                {% endif %}
+                {% if review_error %}
+                    <p class="error-message">{{ review_error }}</p>
+                {% endif %}
+                <label>
+                    店名
+                    <input name="shop_name" type="text" placeholder="例: 辰口温泉 総湯" required>
+                </label>
+                <fieldset class="star-field">
+                    <legend>星評価</legend>
+                    <div class="star-options">
+                        {% for rating in range(5, 0, -1) %}
+                            <input id="rating-{{ rating }}" name="rating" type="radio" value="{{ rating }}" required>
+                            <label for="rating-{{ rating }}" aria-label="{{ rating }}点">★</label>
+                        {% endfor %}
+                    </div>
+                </fieldset>
+                <label>
+                    口コミ
+                    <textarea name="comment" rows="5" placeholder="味、価格、混み具合、アクセス、車で行きやすいかなど" required></textarea>
+                </label>
+                <button type="submit" class="primary-button">口コミを投稿</button>
+            </form>
+
+            <div class="review-list" aria-live="polite">
+                <div class="list-header">
+                    <h2>新着口コミ</h2>
+                    <span>{{ reviews|length }}件</span>
+                </div>
+                {% if reviews %}
+                    {% for review in reviews %}
+                        <article class="review-card">
+                            <div class="review-card-header">
+                                <div>
+                                    <h3>{{ review.shop_name }}</h3>
+                                    <p>{{ review.created_label }}</p>
+                                </div>
+                                <div class="review-stars" aria-label="{{ review.rating }}点">
+                                    {% for _ in range(review.rating) %}★{% endfor %}
+                                    {% for _ in range(5 - review.rating) %}☆{% endfor %}
+                                </div>
+                            </div>
+                            <p>{{ review.comment }}</p>
+                        </article>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">まだ口コミがありません。最初の口コミを投稿してください。</div>
+                {% endif %}
+            </div>
+        </section>
     </main>
 
     <dialog class="compose-dialog" id="composeDialog">
-        <form method="dialog" class="compose-form">
+        <form id="composeForm" class="compose-form">
             <div class="dialog-header">
-                <h2>募集作成デモ</h2>
-                <button type="submit" class="icon-button" aria-label="閉じる">×</button>
+                <h2>募集を作る</h2>
+                <button type="button" id="closeCompose" class="icon-button" aria-label="閉じる">×</button>
             </div>
-            <label>タイトル<input type="text" value="今夜、辰口温泉に行ける人募集"></label>
-            <label>行き先<input type="text" value="辰口温泉"></label>
-            <label>連絡先<input type="text" value="@jaist_go_demo"></label>
-            <label>メモ<textarea rows="4">車を出せる方がいたら連絡ください。ガソリン代は割り勘します。</textarea></label>
-            <button type="submit" class="primary-button">デモを閉じる</button>
+            <p id="composeError" class="error-message" hidden></p>
+            <label>タイトル<input name="title" type="text" placeholder="例: 今夜、辰口温泉に行ける人募集" required></label>
+            <label>カテゴリ
+                <select name="category" required>
+                    <option value="">選択してください</option>
+                    <option value="ride">車募集</option>
+                    <option value="event">遊び</option>
+                </select>
+            </label>
+            <label>行き先<input name="destination" type="text" placeholder="例: 辰口温泉" required></label>
+            <label>出発予定<input name="time" type="text" placeholder="例: 今日 20:00 出発" required></label>
+            <label>集合場所<input name="meeting" type="text" placeholder="例: JAIST正面玄関" required></label>
+            <label>人数<input name="people" type="text" placeholder="例: 2人募集中" required></label>
+            <label>連絡先<input name="contact" type="text" placeholder="例: LINE: your-id" required></label>
+            <label>費用<input name="cost" type="text" placeholder="例: ガソリン代を割り勘"></label>
+            <label>詳細<textarea name="detail" rows="4" placeholder="集合場所の詳細、費用、その他の条件など" required></textarea></label>
+            <button type="submit" class="primary-button">募集を投稿する</button>
         </form>
     </dialog>
 

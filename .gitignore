@@ -2,3 +2,5 @@
 /flaskr/__pycache__/
 uv.lock
 .env
+/flaskr/data/users.json
+/flaskr/data/posts.json
