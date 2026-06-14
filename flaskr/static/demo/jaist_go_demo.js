@@ -92,7 +92,7 @@ const composeDialog = document.querySelector("#composeDialog");
 let activeFilter = "all";
 
 function postUrl(id) {
-    return `/demo/posts/${id}`;
+    return `/posts/${id}`;
 }
 
 function tagClass(tag) {

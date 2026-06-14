@@ -3,7 +3,7 @@ from collections import Counter
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from flaskr import app
+from flaskr import app, auth
 from flask import redirect, render_template, request, url_for
 
 
@@ -41,13 +41,14 @@ def build_review_ranking(reviews):
     ]
     return Counter(recent_shop_names).most_common(5)
 
-@app.route('/')
-def index():
-    return render_template(
-        'index.html'
-        )
+# @app.route('/')
+# def index():
+#     return render_template(
+#         'index.html'
+#         )
     
-@app.route("/demo/board", methods=["GET", "POST"])
+@app.route("/", methods=["GET", "POST"])
+@auth.login_required
 def demo_board():
     reviews = load_reviews()
     review_error = None
@@ -88,6 +89,7 @@ def demo_board():
     )
 
 
-@app.route("/demo/posts/<int:post_id>")
+@app.route("/posts/<int:post_id>")
+@auth.login_required
 def demo_post(post_id):
     return render_template("demo_post.html", post_id=post_id)
