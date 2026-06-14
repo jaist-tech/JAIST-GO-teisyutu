@@ -8,12 +8,10 @@ from pathlib import Path
 import sqlite3
 
 from flaskr import app, auth
-from flask import Flask, jsonify, redirect, render_template, request, session, url_for
+from flask import jsonify, redirect, render_template, request, session, url_for
 
 # .envを読み込む
 load_dotenv()
-
-app = Flask(__name__)
 
 DB_NAME = os.getenv("DB_NAME", "map.db")
 
@@ -108,15 +106,6 @@ def get_map_data_by_id(data_id):
         """, (data_id,)).fetchone()
 
     return dict(row) if row else None
-
-@app.route("/demo/board")
-def demo_board():
-    return render_template("demo_board.html")
-
-
-@app.route("/demo/posts/<int:post_id>")
-def demo_post(post_id):
-    return render_template("demo_post.html", post_id=post_id)
 
 @app.cli.command("create-db")
 def create_db():
@@ -238,6 +227,9 @@ def show_map(data_id):
     if location is None:
         return "データが見つかりません", 404
 
+    dest_lat = request.args.get("dest_lat", "")
+    dest_lng = request.args.get("dest_lng", "")
+
     return render_template(
         "index.html",
         location={
@@ -245,6 +237,8 @@ def show_map(data_id):
             "lng": location["longitude"],
             "title": location["place_name"]
         },
+        dest_lat=dest_lat,
+        dest_lng=dest_lng,
         google_map_api_key=app.config["google_map_api_key"]
     )
 @app.route("/api/posts", methods=["GET"])
@@ -286,12 +280,35 @@ def api_create_post():
     contact = data.get("contact", "").strip()
     cost = data.get("cost", "").strip()
     detail = data.get("detail", "").strip()
+    place_name = data.get("place_name", "").strip()
+    latitude_raw = data.get("latitude")
+    longitude_raw = data.get("longitude")
+    dest_latitude_raw = data.get("dest_latitude")
+    dest_longitude_raw = data.get("dest_longitude")
 
-    if not all([title, category, destination, time, meeting, people, contact, detail]):
+    if not all([title, category, destination, time, meeting, people, contact, detail, place_name]):
         return jsonify({"error": "必須項目をすべて入力してください"}), 400
+
+    if any(v is None for v in [latitude_raw, longitude_raw, dest_latitude_raw, dest_longitude_raw]):
+        return jsonify({"error": "集合場所・目的地の緯度経度を入力してください"}), 400
+
+    try:
+        latitude = float(latitude_raw)
+        longitude = float(longitude_raw)
+        dest_latitude = float(dest_latitude_raw)
+        dest_longitude = float(dest_longitude_raw)
+    except (TypeError, ValueError):
+        return jsonify({"error": "緯度・経度は数値で入力してください"}), 400
 
     if category not in CATEGORY_TAGS:
         return jsonify({"error": "カテゴリが不正です"}), 400
+
+    with sqlite3.connect(DB_NAME) as conn:
+        cursor = conn.execute("""
+            INSERT INTO map_information (latitude, longitude, place_name)
+            VALUES (?, ?, ?)
+        """, (latitude, longitude, place_name))
+        map_id = cursor.lastrowid
 
     user_id = session["user_id"]
     owner = get_username(user_id)
@@ -313,6 +330,9 @@ def api_create_post():
         "cost": cost,
         "summary": summary,
         "detail": detail,
+        "map_id": map_id,
+        "dest_latitude": dest_latitude,
+        "dest_longitude": dest_longitude,
         "user_id": user_id,
         "owner": owner,
         "created_at": datetime.now(timezone.utc).isoformat(),

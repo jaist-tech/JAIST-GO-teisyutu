@@ -8,53 +8,108 @@
         html, body {
             height: 100%;
             margin: 0;
-        }
-
-        h1, p {
-            margin-left: 16px;
+            font-family: sans-serif;
         }
 
         #map {
-            height: 80%;
+            height: 100%;
             width: 100%;
+        }
+
+        #info-bar, #error-bar {
+            display: none;
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            padding: 8px 16px;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        #info-bar {
+            background: #fff;
+        }
+
+        #info-bar strong {
+            color: #1a7a5a;
+        }
+
+        #error-bar {
+            background: #fff3f3;
+            border: 1px solid #f5c6c6;
+            color: #c0392b;
+        }
+
+        #info-bar.visible, #error-bar.visible {
+            display: block;
         }
     </style>
 </head>
 
 <body>
-    <h1>JAIST GO</h1>
-    <p>Welcome to JAIST GO!</p>
-
+    <div id="info-bar"></div>
+    <div id="error-bar"></div>
     <div id="map"></div>
 
-    <script src="https://maps.google.com/maps/api/js?key={{ google_map_api_key }}&language=ja"></script>
-
     <script>
-        const locationData = {
-            lat: {{ location.lat }},
-            lng: {{ location.lng }},
-            title: "{{ location.title }}"
-        };
+        const originLat = {{ location.lat }};
+        const originLng = {{ location.lng }};
+        const originTitle = "{{ location.title | e }}";
+        const destLat = parseFloat("{{ dest_lat }}");
+        const destLng = parseFloat("{{ dest_lng }}");
 
-        const myLatLng = new google.maps.LatLng(
-            locationData.lat,
-            locationData.lng
-        );
+        function initMap() {
+            const originLatLng = new google.maps.LatLng(originLat, originLng);
 
-        const map = new google.maps.Map(
-            document.getElementById("map"),
-            {
-                zoom: 15,
-                center: myLatLng,
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 13,
+                center: originLatLng,
                 mapTypeId: "roadmap"
-            }
-        );
+            });
 
-        const marker = new google.maps.Marker({
-            position: myLatLng,
-            map: map,
-            title: locationData.title
-        });
+            if (!isNaN(destLat) && !isNaN(destLng)) {
+                const destLatLng = new google.maps.LatLng(destLat, destLng);
+                const directionsService = new google.maps.DirectionsService();
+                const directionsRenderer = new google.maps.DirectionsRenderer();
+                directionsRenderer.setMap(map);
+
+                directionsService.route({
+                    origin: originLatLng,
+                    destination: destLatLng,
+                    travelMode: google.maps.TravelMode.DRIVING,
+                }, (result, status) => {
+                    if (status === "OK") {
+                        directionsRenderer.setDirections(result);
+                        const leg = result.routes[0].legs[0];
+                        const infoBar = document.getElementById("info-bar");
+                        infoBar.innerHTML = `🚗 <strong>${leg.duration.text}</strong>（${leg.distance.text}）`;
+                        infoBar.classList.add("visible");
+                    } else {
+                        const errorBar = document.getElementById("error-bar");
+                        errorBar.textContent = `ルート取得に失敗しました（エラー: ${status}）`;
+                        errorBar.classList.add("visible");
+                        showSingleMarker(map, originLatLng);
+                    }
+                });
+            } else {
+                showSingleMarker(map, originLatLng);
+            }
+        }
+
+        function showSingleMarker(map, position) {
+            new google.maps.Marker({
+                position: position,
+                map: map,
+                title: originTitle
+            });
+        }
     </script>
+
+    <!-- callback=initMap と async defer で API 準備完了後に initMap を呼ぶ -->
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ google_map_api_key }}&language=ja&callback=initMap" async defer></script>
 </body>
 </html>
