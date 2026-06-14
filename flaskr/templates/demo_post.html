@@ -17,6 +17,7 @@
         </a>
         <nav class="top-nav" aria-label="デモメニュー">
             <a href="{{ url_for('demo_board') }}">掲示板へ戻る</a>
+            {% include "_auth_status.html" %}
         </nav>
     </header>
 

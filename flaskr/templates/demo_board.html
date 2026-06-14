@@ -19,6 +19,7 @@
             <a href="{{ url_for('demo_board') }}" aria-current="page">掲示板</a>
             <a href="#reviews">口コミ</a>
             <button type="button" class="ghost-button" data-open-compose>募集を作る</button>
+            {% include "_auth_status.html" %}
         </nav>
     </header>
 
