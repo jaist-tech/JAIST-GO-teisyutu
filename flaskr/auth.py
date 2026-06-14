@@ -135,7 +135,7 @@ def login():
             next_url = request.args.get("next", "")
             if next_url.startswith("/") and not next_url.startswith("//"):
                 return redirect(next_url)
-            return redirect(url_for("index"))
+            return redirect(url_for("demo_board"))
 
     return render_template("login.html", error=error)
 
@@ -144,4 +144,4 @@ def login():
 def logout():
     session.clear()
     flash("ログアウトしました。")
-    return redirect(url_for("index"))
+    return redirect(url_for("demo_board"))
