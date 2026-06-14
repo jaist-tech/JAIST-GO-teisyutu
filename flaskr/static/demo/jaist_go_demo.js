@@ -114,6 +114,17 @@ async function loadAndRenderDetail() {
             ? `<button class="ghost-button" type="button" onclick="deletePost(${post.id})">この募集を削除</button>`
             : "";
 
+        const hasRoute = post.map_id && post.dest_latitude != null && post.dest_longitude != null;
+        const mapSrc = hasRoute
+            ? `/map/${post.map_id}?dest_lat=${post.dest_latitude}&dest_lng=${post.dest_longitude}`
+            : post.map_id ? `/map/${post.map_id}` : null;
+        const mapSection = mapSrc
+            ? `<iframe src="${mapSrc}" class="detail-map-iframe" title="集合場所の地図" loading="lazy"></iframe>`
+            : `<div class="detail-map" aria-label="集合場所から目的地までのイメージ">
+                    <span class="pin">集合</span>
+                    <span class="pin destination">目的地</span>
+                </div>`;
+
         detail.innerHTML = `
             <section class="detail-main">
                 <div class="tag-row">
@@ -122,10 +133,7 @@ async function loadAndRenderDetail() {
                 </div>
                 <h1>${esc(post.title)}</h1>
                 <p class="detail-lead">${esc(post.summary)}</p>
-                <div class="detail-map" aria-label="集合場所から目的地までのイメージ">
-                    <span class="pin">集合</span>
-                    <span class="pin destination">目的地</span>
-                </div>
+                ${mapSection}
                 <div class="info-list">
                     <div class="info-item"><span>出発予定</span><strong>${esc(post.time)}</strong></div>
                     <div class="info-item"><span>集合場所</span><strong>${esc(post.meeting)}</strong></div>
@@ -213,6 +221,11 @@ composeForm?.addEventListener("submit", async (event) => {
         contact: composeForm.querySelector("[name=contact]").value.trim(),
         cost: composeForm.querySelector("[name=cost]").value.trim(),
         detail: composeForm.querySelector("[name=detail]").value.trim(),
+        place_name: composeForm.querySelector("[name=meeting]").value.trim(),
+        latitude: parseFloat(composeForm.querySelector("[name=latitude]").value),
+        longitude: parseFloat(composeForm.querySelector("[name=longitude]").value),
+        dest_latitude: parseFloat(composeForm.querySelector("[name=dest_latitude]").value),
+        dest_longitude: parseFloat(composeForm.querySelector("[name=dest_longitude]").value),
     };
 
     try {
